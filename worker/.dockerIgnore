@@ -1,0 +1,10 @@
+# Ignore node dependencies
+node_modules/
+package-lock.json
+
+# Optional: ignore logs, environment files, build artifacts, and OS junk
+npm-debug.log
+yarn-error.log
+.env
+dist/
+.DS_Store

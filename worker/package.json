@@ -1,0 +1,19 @@
+{
+  "name": "ducker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "config.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.8.2",
+    "aws-sdk": "^2.1692.0",
+    "dotenv": "^16.5.0",
+    "kafkajs": "^2.2.4"
+  }
+}

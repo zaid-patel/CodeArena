@@ -1,0 +1,32 @@
+
+
+docker run -d --name kafka --network zaidcode -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092 -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT -e KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT apache/kafka
+   
+
+
+
+
+
+to produce from cli:
+
+docker run -it --network zes_zaidcode confluentinc/cp-kafka:7.3.2 bash
+kafka-console-producer --broker-list kafkazoo:9092 --topic java-submissions
+{"code":"public class Main { public static void main(String[] args) { System.out.println(\"Hello\"); }}","input":"","check_output":"Hello"}
+
+
+--
+
+to produce from psuedo_producer the port used is localhost:9093 and not 9092  
+
+
+network name:  zes_zaidcode
+kafka and zookeeper are inside the zes compose yaml file
+
+
+judge.js code build and run container:
+docker build -t java-runner .
+docker run --rm  --name java-runner --network zes_zaidcode java-runner
+
+
+
+

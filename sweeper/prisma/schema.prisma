@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+enum Verdict {
+  Accepted 
+  Wrong_Answer
+  TLE 
+  MLE 
+  Runtime_Error
+  Compilation_Error
+  Pending
+  Judging
+}
+
+
+enum Difficulty {
+  Medium
+  Easy
+  Hard
+}
+
+enum Role {
+  coder 
+  admin
+  problem_setter 
+}
+
+
+model User{
+  id Int @id @default(autoincrement())
+  username String @unique 
+  email String
+  password String
+  submissions Submission[]
+  participatedContests Contest[] @relation(name: "participated in")
+  rankings Ranking[]
+  authoredProblems Problem[]  //  his written problems
+  role Role
+}
+
+model Problem {
+  id Int @id @default(autoincrement())
+  title String @unique
+  testcaseCount Int 
+  attemptCount Int @default(0)
+  acceptedCount Int @default(0)
+  contestAcceptedCount Int @default(0)
+  difficulty Difficulty 
+  score Int 
+  contestId Int ?
+  contest Contest ? @relation(fields: [contestId],references: [id])
+  author Int
+  user User @relation(fields: [author],references: [id])
+  submission Submission[]
+  problemStat ProblemStat[]   // (indeed it is) i dont know if this is required .like can there be some mec. that this relation is not needed
+  tags String[] @default(["general"]) 
+  description       String  @default("no description provided")// markdown
+  inputDescription  String?
+  outputDescription String?
+  constraints       String?
+  exampleTestcase   String[] 
+}
+
+
+model Contest {
+  id Int @id @default(autoincrement())
+  title String @default("new contest")
+  authorIds Int[]
+  problems Problem[]
+  participants User[] @relation(name: "participated in")
+  startTime DateTime
+  endTime DateTime
+  ranking Ranking[] 
+
+}
+
+
+
+
+model Submission {
+  id Int @id @default(autoincrement())
+  codeUrl String ? @unique
+  userId Int
+  user User @relation(fields: [userId],references: [id])
+  verdict Verdict @default(Pending)
+  problemId Int
+  problem Problem @relation(fields: [problemId],references: [id])
+  official Boolean @default(false)  //  idk if this is req.
+  time DateTime
+  statement String ?
+
+}
+
+model Ranking {
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId],references: [id])
+  contestId Int
+  contest Contest @relation(fields: [contestId],references: [id])
+  problemStats ProblemStat[]   //  for each problem a stat like failed attempts , time solved etc,  chalo lets add
+  failedAttempts Int
+  score Int
+  lastAttempted DateTime
+  finalTime DateTime // needed if penalty can be varying (like for some contest different, etc)
+  @@unique([userId, contestId])   // uniqueness for cross relation 
+  @@index([contestId])  
+
+}
+
+model ProblemStat {
+  id         Int      @id @default(autoincrement())
+  rankingId Int
+  ranking Ranking @relation(fields: [rankingId],references: [id])
+  problemId Int
+  problem Problem @relation(fields: [problemId],references: [id])
+  attempts   Int  @default(0)
+  score      Int @default(0)
+  solved     Boolean  @default(false)
+  timeTaken  Int   @default(0) // seconds from contest start
+  @@unique([rankingId, problemId])  //  candidate key for cross relation
+  @@index([rankingId])  //  for faster reads for rankings as mostly we will be querying with rankingId rather than primary key
+}
+

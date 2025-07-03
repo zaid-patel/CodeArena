@@ -1,0 +1,5 @@
+export const TOPIC_NAME="java-submissions"
+export const AWS_ACCESS_KEY_ID="Access key"
+export const AWS_SECRET_ACCESS_KEY="secret key"
+export const S3_ENDPOINT="https://zaidrepl.s3.ap-south-1.amazonaws.com"
+export const AWS_S3_BUCKET="zaidrepl"
